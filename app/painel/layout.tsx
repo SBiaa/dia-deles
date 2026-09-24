@@ -30,6 +30,12 @@ export default async function LayoutPainel({
           <Link href="/painel/presentes" className="hover:text-foreground">
             Presentes
           </Link>
+          <Link href="/painel/custos" className="hover:text-foreground">
+            Custos
+          </Link>
+          <Link href="/painel/tarefas" className="hover:text-foreground">
+            Checklist
+          </Link>
           <Link href="/painel/configuracoes" className="hover:text-foreground">
             Configurações
           </Link>

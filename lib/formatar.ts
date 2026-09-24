@@ -5,3 +5,9 @@ export function formatarPreco(centavos: number | null): string | null {
     currency: "BRL",
   });
 }
+
+export function formatarData(data: string | null): string | null {
+  if (!data) return null;
+  const [ano, mes, dia] = data.split("-");
+  return `${dia}/${mes}/${ano}`;
+}

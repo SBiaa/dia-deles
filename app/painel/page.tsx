@@ -52,7 +52,7 @@ export default async function PaginaVisaoGeral() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         <Link
           href="/painel/site"
           className="rounded-2xl border border-border bg-card p-5 hover:border-accent"
@@ -78,6 +78,24 @@ export default async function PaginaVisaoGeral() {
           <p className="font-serif text-lg text-foreground">Presentes</p>
           <p className="mt-1 text-sm text-muted-foreground">
             Lista de presentes
+          </p>
+        </Link>
+        <Link
+          href="/painel/custos"
+          className="rounded-2xl border border-border bg-card p-5 hover:border-accent"
+        >
+          <p className="font-serif text-lg text-foreground">Custos</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            O que já foi pago e o que falta
+          </p>
+        </Link>
+        <Link
+          href="/painel/tarefas"
+          className="rounded-2xl border border-border bg-card p-5 hover:border-accent"
+        >
+          <p className="font-serif text-lg text-foreground">Checklist</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            O que falta fazer até o grande dia
           </p>
         </Link>
       </div>
