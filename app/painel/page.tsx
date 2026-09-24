@@ -63,12 +63,12 @@ export default async function PaginaVisaoGeral() {
           </p>
         </Link>
         <Link
-          href="/painel/rsvp"
+          href="/painel/convidados"
           className="rounded-2xl border border-border bg-card p-5 hover:border-accent"
         >
-          <p className="font-serif text-lg text-foreground">Confirmações</p>
+          <p className="font-serif text-lg text-foreground">Convidados</p>
           <p className="mt-1 text-sm text-muted-foreground">
-            Quem confirmou presença
+            Lista e links de convite
           </p>
         </Link>
         <Link

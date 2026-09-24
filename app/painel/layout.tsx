@@ -24,8 +24,8 @@ export default async function LayoutPainel({
           <Link href="/painel/site" className="hover:text-foreground">
             Meu site
           </Link>
-          <Link href="/painel/rsvp" className="hover:text-foreground">
-            Confirmações
+          <Link href="/painel/convidados" className="hover:text-foreground">
+            Convidados
           </Link>
           <Link href="/painel/presentes" className="hover:text-foreground">
             Presentes

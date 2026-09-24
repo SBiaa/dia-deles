@@ -2,13 +2,16 @@
 
 import { useState } from "react";
 import { Botao } from "@/components/ui/Botao";
+import type { ConvidadoRow } from "@/lib/db/queries/convidados";
 
-export function FormularioRsvp({ casamentoId }: { casamentoId: string }) {
+export function ConfirmacaoConvite({ convidado }: { convidado: ConvidadoRow }) {
   const [estado, setEstado] = useState<"idle" | "enviando" | "ok" | "erro">(
-    "idle"
+    convidado.confirmado !== null ? "ok" : "idle"
   );
   const [mensagemErro, setMensagemErro] = useState<string | null>(null);
-  const [vaiComparecer, setVaiComparecer] = useState(true);
+  const [vaiComparecer, setVaiComparecer] = useState(
+    convidado.confirmado !== false
+  );
 
   async function enviar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -16,7 +19,7 @@ export function FormularioRsvp({ casamentoId }: { casamentoId: string }) {
     setMensagemErro(null);
 
     const formData = new FormData(event.currentTarget);
-    const resposta = await fetch("/api/rsvp", {
+    const resposta = await fetch(`/api/convite/${convidado.codigo}/responder`, {
       method: "POST",
       body: formData,
     });
@@ -34,36 +37,21 @@ export function FormularioRsvp({ casamentoId }: { casamentoId: string }) {
   if (estado === "ok") {
     return (
       <p className="text-center text-foreground">
-        Obrigado por confirmar! Já registramos sua resposta.
+        Obrigado por confirmar, {convidado.nome}! Já registramos sua
+        resposta.{" "}
+        <button
+          type="button"
+          onClick={() => setEstado("idle")}
+          className="text-accent underline"
+        >
+          Mudar resposta
+        </button>
       </p>
     );
   }
 
   return (
     <form onSubmit={enviar} className="mx-auto flex max-w-md flex-col gap-4">
-      <input type="hidden" name="casamentoId" value={casamentoId} />
-      {/* honeypot */}
-      <input
-        type="text"
-        name="site"
-        tabIndex={-1}
-        autoComplete="off"
-        className="hidden"
-        aria-hidden="true"
-      />
-
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="nomeConvidado" className="text-sm text-muted-foreground">
-          Seu nome
-        </label>
-        <input
-          id="nomeConvidado"
-          name="nomeConvidado"
-          required
-          className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-accent"
-        />
-      </div>
-
       <div className="flex gap-6">
         <label className="flex items-center gap-2 text-sm">
           <input
@@ -87,20 +75,21 @@ export function FormularioRsvp({ casamentoId }: { casamentoId: string }) {
         </label>
       </div>
 
-      {vaiComparecer && (
+      {vaiComparecer && convidado.limite_acompanhantes > 0 && (
         <div className="flex flex-col gap-1.5">
           <label
             htmlFor="numeroAcompanhantes"
             className="text-sm text-muted-foreground"
           >
-            Quantos acompanhantes (além de você)?
+            Quantos acompanhantes (além de você, até{" "}
+            {convidado.limite_acompanhantes})?
           </label>
           <input
             id="numeroAcompanhantes"
             name="numeroAcompanhantes"
             type="number"
             min={0}
-            max={20}
+            max={convidado.limite_acompanhantes}
             defaultValue={0}
             className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-accent"
           />
