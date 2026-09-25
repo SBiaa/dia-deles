@@ -18,6 +18,7 @@ export async function POST(
     confirmado: formData.get("confirmado"),
     numeroAcompanhantes: formData.get("numeroAcompanhantes"),
     nomesAcompanhantes: formData.get("nomesAcompanhantes"),
+    restricaoAlimentar: formData.get("restricaoAlimentar"),
     mensagem: formData.get("mensagem"),
   });
 
@@ -48,6 +49,7 @@ export async function POST(
     confirmado: dados.confirmado,
     numeroAcompanhantes: dados.confirmado ? numeroAcompanhantes : 0,
     nomesAcompanhantes: dados.confirmado ? dados.nomesAcompanhantes : null,
+    restricaoAlimentar: dados.confirmado ? dados.restricaoAlimentar : null,
     mensagem: dados.mensagem,
   });
 

@@ -14,6 +14,13 @@ export const esquemaNovoConvidado = z.object({
     .enum(["noiva", "noivo", ""])
     .nullish()
     .transform((v) => (v ? v : null)),
+  telefone: z
+    .string()
+    .nullish()
+    .transform((v) => {
+      const digitos = (v ?? "").replace(/\D/g, "");
+      return digitos.length >= 10 ? digitos : null;
+    }),
   limiteAcompanhantes: z
     .string()
     .nullish()
@@ -33,5 +40,6 @@ export const esquemaResposta = z.object({
       return Number.isFinite(n) && n > 0 ? n : 0;
     }),
   nomesAcompanhantes: opcional(),
+  restricaoAlimentar: opcional(),
   mensagem: opcional(),
 });

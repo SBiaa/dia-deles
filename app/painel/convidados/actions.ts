@@ -21,6 +21,7 @@ export async function criarConvidado(
   const validado = esquemaNovoConvidado.safeParse({
     nome: formData.get("nome"),
     lado: formData.get("lado"),
+    telefone: formData.get("telefone"),
     limiteAcompanhantes: formData.get("limiteAcompanhantes"),
   });
 
@@ -33,6 +34,7 @@ export async function criarConvidado(
     casamentoId: usuario.casamentoId,
     nome: validado.data.nome,
     lado: validado.data.lado,
+    telefone: validado.data.telefone,
     limiteAcompanhantes: validado.data.limiteAcompanhantes,
     codigo,
   });

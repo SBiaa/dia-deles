@@ -5,6 +5,7 @@ type Props = {
   required?: boolean;
   defaultValue?: string;
   autoFocus?: boolean;
+  placeholder?: string;
   erro?: string[];
 };
 
@@ -15,6 +16,7 @@ export function Campo({
   required,
   defaultValue,
   autoFocus,
+  placeholder,
   erro,
 }: Props) {
   return (
@@ -29,6 +31,7 @@ export function Campo({
         required={required}
         defaultValue={defaultValue}
         autoFocus={autoFocus}
+        placeholder={placeholder}
         className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
       />
       {erro?.map((mensagem) => (

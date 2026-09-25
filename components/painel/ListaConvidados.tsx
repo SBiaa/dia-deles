@@ -6,6 +6,7 @@ import {
   removerConvidado,
 } from "@/app/painel/convidados/actions";
 import type { ConvidadoRow } from "@/lib/db/queries/convidados";
+import { linkWhatsApp } from "@/lib/whatsapp";
 
 function status(convidado: ConvidadoRow): { texto: string; classe: string } {
   if (convidado.confirmado === null) {
@@ -27,15 +28,25 @@ function LinhaConvidado({
   const [copiado, setCopiado] = useState(false);
   const info = status(convidado);
 
+  function url() {
+    return `${window.location.origin}/${slug}/convite/${convidado.codigo}`;
+  }
+
   async function copiarLink() {
-    const url = `${window.location.origin}/${slug}/convite/${convidado.codigo}`;
+    const link = url();
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(link);
       setCopiado(true);
       setTimeout(() => setCopiado(false), 2000);
     } catch {
-      window.prompt("Copie o link:", url);
+      window.prompt("Copie o link:", link);
     }
+  }
+
+  function abrirWhatsApp() {
+    if (!convidado.telefone) return;
+    const mensagem = `Oi, ${convidado.nome}! Você foi convidado(a) para o nosso casamento 🎉 Confirme sua presença aqui: ${url()}`;
+    window.open(linkWhatsApp(convidado.telefone, mensagem), "_blank");
   }
 
   return (
@@ -46,6 +57,16 @@ function LinhaConvidado({
           <span className="ml-2 text-xs text-muted-foreground">
             ({convidado.lado})
           </span>
+        )}
+        {convidado.confirmado && convidado.nomes_acompanhantes && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Acompanhantes: {convidado.nomes_acompanhantes}
+          </p>
+        )}
+        {convidado.confirmado && convidado.restricao_alimentar && (
+          <p className="mt-1 text-xs text-muted-foreground">
+            Restrição alimentar: {convidado.restricao_alimentar}
+          </p>
         )}
       </td>
       <td className="px-4 py-2">{convidado.limite_acompanhantes}</td>
@@ -63,6 +84,15 @@ function LinhaConvidado({
       </td>
       <td className="px-4 py-2 text-right">
         <div className="flex items-center justify-end gap-3">
+          {convidado.telefone && (
+            <button
+              type="button"
+              onClick={abrirWhatsApp}
+              className="text-xs text-accent underline"
+            >
+              Enviar no WhatsApp
+            </button>
+          )}
           <button
             type="button"
             onClick={copiarLink}

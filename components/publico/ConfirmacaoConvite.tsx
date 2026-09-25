@@ -12,6 +12,9 @@ export function ConfirmacaoConvite({ convidado }: { convidado: ConvidadoRow }) {
   const [vaiComparecer, setVaiComparecer] = useState(
     convidado.confirmado !== false
   );
+  const [numeroAcompanhantes, setNumeroAcompanhantes] = useState(
+    convidado.numero_acompanhantes
+  );
 
   async function enviar(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -90,7 +93,46 @@ export function ConfirmacaoConvite({ convidado }: { convidado: ConvidadoRow }) {
             type="number"
             min={0}
             max={convidado.limite_acompanhantes}
-            defaultValue={0}
+            value={numeroAcompanhantes}
+            onChange={(e) => setNumeroAcompanhantes(Number(e.target.value))}
+            className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-accent"
+          />
+        </div>
+      )}
+
+      {vaiComparecer && numeroAcompanhantes > 0 && (
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="nomesAcompanhantes"
+            className="text-sm text-muted-foreground"
+          >
+            Nome dos acompanhantes
+          </label>
+          <input
+            id="nomesAcompanhantes"
+            name="nomesAcompanhantes"
+            type="text"
+            defaultValue={convidado.nomes_acompanhantes ?? ""}
+            placeholder="Ex: Maria, João"
+            className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-accent"
+          />
+        </div>
+      )}
+
+      {vaiComparecer && (
+        <div className="flex flex-col gap-1.5">
+          <label
+            htmlFor="restricaoAlimentar"
+            className="text-sm text-muted-foreground"
+          >
+            Alguma restrição alimentar? (opcional)
+          </label>
+          <input
+            id="restricaoAlimentar"
+            name="restricaoAlimentar"
+            type="text"
+            defaultValue={convidado.restricao_alimentar ?? ""}
+            placeholder="Ex: vegetariano, alergia a amendoim"
             className="rounded-md border border-border bg-card px-3 py-2 text-sm outline-none focus:border-accent"
           />
         </div>

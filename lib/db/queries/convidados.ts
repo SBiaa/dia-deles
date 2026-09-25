@@ -5,11 +5,13 @@ export type ConvidadoRow = {
   casamento_id: string;
   nome: string;
   lado: string | null;
+  telefone: string | null;
   limite_acompanhantes: number;
   codigo: string;
   confirmado: boolean | null;
   numero_acompanhantes: number;
   nomes_acompanhantes: string | null;
+  restricao_alimentar: string | null;
   mensagem: string | null;
   respondido_em: string | null;
   criado_em: string;
@@ -27,17 +29,19 @@ export async function criarConvidado(dados: {
   casamentoId: string;
   nome: string;
   lado: string | null;
+  telefone: string | null;
   limiteAcompanhantes: number;
   codigo: string;
 }): Promise<ConvidadoRow> {
   const { rows } = await pool.query<ConvidadoRow>(
-    `insert into convidados (casamento_id, nome, lado, limite_acompanhantes, codigo)
-     values ($1, $2, $3, $4, $5)
+    `insert into convidados (casamento_id, nome, lado, telefone, limite_acompanhantes, codigo)
+     values ($1, $2, $3, $4, $5, $6)
      returning *`,
     [
       dados.casamentoId,
       dados.nome,
       dados.lado,
+      dados.telefone,
       dados.limiteAcompanhantes,
       dados.codigo,
     ]
@@ -71,6 +75,7 @@ export async function registrarResposta(
     confirmado: boolean;
     numeroAcompanhantes: number;
     nomesAcompanhantes: string | null;
+    restricaoAlimentar: string | null;
     mensagem: string | null;
   }
 ): Promise<ConvidadoRow | null> {
@@ -79,7 +84,8 @@ export async function registrarResposta(
        confirmado = $2,
        numero_acompanhantes = $3,
        nomes_acompanhantes = $4,
-       mensagem = $5,
+       restricao_alimentar = $5,
+       mensagem = $6,
        respondido_em = now(),
        atualizado_em = now()
      where codigo = $1
@@ -89,6 +95,7 @@ export async function registrarResposta(
       dados.confirmado,
       dados.numeroAcompanhantes,
       dados.nomesAcompanhantes,
+      dados.restricaoAlimentar,
       dados.mensagem,
     ]
   );

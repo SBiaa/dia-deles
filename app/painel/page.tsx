@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { exigirSessao } from "@/lib/dal";
 import { buscarCasamentoPorId } from "@/lib/db/queries/casamentos";
+import { listarConvidadosPorCasamento } from "@/lib/db/queries/convidados";
+import { calcularResumoConvidados } from "@/lib/convidados";
 import { Botao } from "@/components/ui/Botao";
 import { publicar, despublicar } from "@/app/painel/site/actions";
 
@@ -11,6 +13,9 @@ export default async function PaginaVisaoGeral() {
   if (!casamento) {
     return <p className="text-muted-foreground">Casamento não encontrado.</p>;
   }
+
+  const convidados = await listarConvidadosPorCasamento(usuario.casamentoId);
+  const resumoConvidados = calcularResumoConvidados(convidados);
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6">
@@ -49,6 +54,29 @@ export default async function PaginaVisaoGeral() {
               {casamento.publicado ? "Despublicar" : "Publicar site"}
             </Botao>
           </form>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <p className="text-xs text-muted-foreground">Confirmaram presença</p>
+          <p className="mt-1 font-serif text-lg text-foreground">
+            {resumoConvidados.confirmados}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <p className="text-xs text-muted-foreground">Pessoas no total</p>
+          <p className="mt-1 font-serif text-lg text-accent">
+            {resumoConvidados.totalPessoas}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-border bg-card p-4">
+          <p className="text-xs text-muted-foreground">
+            Ainda não responderam
+          </p>
+          <p className="mt-1 font-serif text-lg text-foreground">
+            {resumoConvidados.pendentes}
+          </p>
         </div>
       </div>
 

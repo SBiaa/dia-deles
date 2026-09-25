@@ -39,6 +39,14 @@ export function FormularioNovoConvidado() {
           <option value="noivo">Noivo</option>
         </select>
       </div>
+      <div className="w-48">
+        <Campo
+          label="WhatsApp (opcional)"
+          name="telefone"
+          type="tel"
+          placeholder="(11) 91234-5678"
+        />
+      </div>
       <div className="w-40">
         <Campo
           label="Acompanhantes permitidos"
