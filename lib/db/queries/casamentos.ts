@@ -21,6 +21,10 @@ export type CasamentoRow = {
   instagram_url: string | null;
   foto_capa_url: string | null;
   publicado: boolean;
+  cronograma_token: string | null;
+  galeria_token: string | null;
+  galeria_moderada: boolean;
+  padrinhos_mensagem: string | null;
   criado_em: string;
   atualizado_em: string;
 };

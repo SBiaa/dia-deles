@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Botao } from "@/components/ui/Botao";
+import { QrEntrada } from "@/components/publico/QrEntrada";
 import type { ConvidadoRow } from "@/lib/db/queries/convidados";
 
 export function ConfirmacaoConvite({ convidado }: { convidado: ConvidadoRow }) {
@@ -39,17 +40,20 @@ export function ConfirmacaoConvite({ convidado }: { convidado: ConvidadoRow }) {
 
   if (estado === "ok") {
     return (
-      <p className="text-center text-foreground">
-        Obrigado por confirmar, {convidado.nome}! Já registramos sua
-        resposta.{" "}
-        <button
-          type="button"
-          onClick={() => setEstado("idle")}
-          className="text-accent underline"
-        >
-          Mudar resposta
-        </button>
-      </p>
+      <div>
+        <p className="text-center text-foreground">
+          Obrigado por confirmar, {convidado.nome}! Já registramos sua
+          resposta.{" "}
+          <button
+            type="button"
+            onClick={() => setEstado("idle")}
+            className="text-accent underline"
+          >
+            Mudar resposta
+          </button>
+        </p>
+        {vaiComparecer && <QrEntrada nome={convidado.nome} />}
+      </div>
     );
   }
 
