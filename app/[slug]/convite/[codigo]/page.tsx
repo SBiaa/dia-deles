@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { buscarCasamentoPorSlug } from "@/lib/db/queries/casamentos";
@@ -65,6 +66,24 @@ export default async function PaginaConvite(
           <ConfirmacaoConvite convidado={convidado} />
         </div>
       </section>
+
+      {casamento.galeria_token && (
+        <section className="mx-auto w-full max-w-lg px-6 pb-16 text-center">
+          <p className="text-sm uppercase tracking-widest text-accent">
+            Galeria de fotos
+          </p>
+          <p className="mt-3 text-foreground/80">
+            Tem fotos do casamento? Envie para os noivos e veja o que os
+            outros convidados registraram.
+          </p>
+          <Link
+            href={`/${casamento.slug}/galeria/${casamento.galeria_token}`}
+            className="mt-4 inline-block rounded-full border border-border px-5 py-2.5 text-sm font-medium text-foreground/80 transition hover:border-accent/40 hover:text-accent"
+          >
+            Abrir a galeria
+          </Link>
+        </section>
+      )}
     </main>
   );
 }
