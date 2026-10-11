@@ -24,13 +24,6 @@ export function FormularioCadastro() {
         required
         erro={estado?.camposInvalidos?.email}
       />
-      <Campo
-        label="Senha"
-        name="senha"
-        type="password"
-        required
-        erro={estado?.camposInvalidos?.senha}
-      />
 
       <div className="mt-2 grid grid-cols-2 gap-4">
         <Campo

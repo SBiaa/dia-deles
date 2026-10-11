@@ -22,7 +22,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!email || !senha) return null;
 
         const usuario = await buscarUsuarioPorEmail(email);
-        if (!usuario) return null;
+        if (!usuario || !usuario.senha_hash) return null;
 
         const ok = await bcrypt.compare(senha, usuario.senha_hash);
         if (!ok) return null;

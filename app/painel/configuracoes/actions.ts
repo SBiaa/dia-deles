@@ -60,7 +60,9 @@ export async function trocarSenha(
     return { erro: "Usuário não encontrado." };
   }
 
-  const ok = await bcrypt.compare(validado.data.senhaAtual, registro.senha_hash);
+  const ok =
+    !!registro.senha_hash &&
+    (await bcrypt.compare(validado.data.senhaAtual, registro.senha_hash));
   if (!ok) {
     return { erro: "Senha atual incorreta." };
   }

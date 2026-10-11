@@ -1,12 +1,13 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
-import bcrypt from "bcryptjs";
 import { signIn, signOut } from "@/lib/auth";
 import { esquemaCadastro, esquemaLogin } from "@/lib/validacao/cadastro";
 import { buscarUsuarioPorEmail, criarUsuario } from "@/lib/db/queries/usuarios";
 import { criarCasamento } from "@/lib/db/queries/casamentos";
 import { gerarSlugDisponivel } from "@/lib/slugs";
+import { gerarTokenDefinirSenha } from "@/lib/tokens";
 
 export type EstadoFormularioAuth =
   | {
@@ -22,7 +23,6 @@ export async function cadastrar(
   const validado = esquemaCadastro.safeParse({
     nome: formData.get("nome"),
     email: formData.get("email"),
-    senha: formData.get("senha"),
     nomeParceiro1: formData.get("nomeParceiro1"),
     nomeParceiro2: formData.get("nomeParceiro2"),
     dataCasamento: formData.get("dataCasamento"),
@@ -39,11 +39,11 @@ export async function cadastrar(
     return { erro: "Já existe uma conta com esse e-mail." };
   }
 
-  const senhaHash = await bcrypt.hash(dados.senha, 10);
+  const token = gerarTokenDefinirSenha();
   const usuario = await criarUsuario({
     email: dados.email,
-    senhaHash,
     nome: dados.nome,
+    tokenDefinirSenha: token,
   });
   const slug = await gerarSlugDisponivel(dados.nomeParceiro1, dados.nomeParceiro2);
   await criarCasamento({
@@ -54,20 +54,7 @@ export async function cadastrar(
     dataCasamento: dados.dataCasamento,
   });
 
-  try {
-    await signIn("credentials", {
-      email: dados.email,
-      senha: dados.senha,
-      redirectTo: "/painel",
-    });
-  } catch (err) {
-    if (err instanceof AuthError) {
-      return {
-        erro: "Conta criada, mas não foi possível entrar automaticamente. Faça login.",
-      };
-    }
-    throw err;
-  }
+  redirect(`/definir-senha/${token}`);
 }
 
 export async function entrar(
