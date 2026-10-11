@@ -61,3 +61,28 @@ export async function arquivarTarefa(
     [id, casamentoId]
   );
 }
+
+/** Insere várias tarefas de uma vez, ignorando títulos que já existem. */
+export async function inserirTarefasSugeridas(
+  casamentoId: string,
+  tarefas: { titulo: string; descricao: string; prazo: string }[]
+): Promise<number> {
+  if (tarefas.length === 0) return 0;
+  const { rowCount } = await pool.query(
+    `insert into tarefas (casamento_id, titulo, descricao, prazo)
+     select $1, t.titulo, t.descricao, t.prazo::date
+     from unnest($2::text[], $3::text[], $4::text[]) as t(titulo, descricao, prazo)
+     where not exists (
+       select 1 from tarefas x
+       where x.casamento_id = $1 and x.ativo = true
+         and lower(x.titulo) = lower(t.titulo)
+     )`,
+    [
+      casamentoId,
+      tarefas.map((t) => t.titulo),
+      tarefas.map((t) => t.descricao),
+      tarefas.map((t) => t.prazo),
+    ]
+  );
+  return rowCount ?? 0;
+}

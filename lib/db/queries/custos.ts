@@ -48,6 +48,17 @@ export async function listarCustosPainel(
   return rows;
 }
 
+export async function buscarCustoPorId(
+  id: string,
+  casamentoId: string
+): Promise<CustoRow | null> {
+  const { rows } = await pool.query<CustoRow>(
+    "select * from custos where id = $1 and casamento_id = $2 and ativo = true",
+    [id, casamentoId]
+  );
+  return rows[0] ?? null;
+}
+
 export async function atualizarValorPago(
   id: string,
   casamentoId: string,

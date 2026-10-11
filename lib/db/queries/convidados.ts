@@ -14,6 +14,9 @@ export type ConvidadoRow = {
   restricao_alimentar: string | null;
   mensagem: string | null;
   respondido_em: string | null;
+  mesa_id: string | null;
+  checkin_em: string | null;
+  checkin_pessoas: number | null;
   criado_em: string;
   atualizado_em: string;
 };
@@ -119,6 +122,78 @@ export async function removerConvidado(
 ): Promise<void> {
   await pool.query(
     "delete from convidados where id = $1 and casamento_id = $2",
+    [id, casamentoId]
+  );
+}
+
+export type ConvidadoComMesa = ConvidadoRow & { mesa_nome: string | null };
+
+export async function listarConvidadosComMesa(
+  casamentoId: string
+): Promise<ConvidadoComMesa[]> {
+  const { rows } = await pool.query<ConvidadoComMesa>(
+    `select c.*, m.nome as mesa_nome
+     from convidados c
+     left join mesas m on m.id = c.mesa_id
+     where c.casamento_id = $1
+     order by c.nome asc`,
+    [casamentoId]
+  );
+  return rows;
+}
+
+export async function buscarConvidadoComMesaPorCodigo(
+  codigo: string,
+  casamentoId: string
+): Promise<ConvidadoComMesa | null> {
+  const { rows } = await pool.query<ConvidadoComMesa>(
+    `select c.*, m.nome as mesa_nome
+     from convidados c
+     left join mesas m on m.id = c.mesa_id
+     where c.codigo = $1 and c.casamento_id = $2`,
+    [codigo, casamentoId]
+  );
+  return rows[0] ?? null;
+}
+
+export async function buscarConvidadoComMesaPorId(
+  id: string,
+  casamentoId: string
+): Promise<ConvidadoComMesa | null> {
+  const { rows } = await pool.query<ConvidadoComMesa>(
+    `select c.*, m.nome as mesa_nome
+     from convidados c
+     left join mesas m on m.id = c.mesa_id
+     where c.id = $1 and c.casamento_id = $2`,
+    [id, casamentoId]
+  );
+  return rows[0] ?? null;
+}
+
+/** Registra a chegada; repetir mantém o horário original e só ajusta o total. */
+export async function registrarCheckin(
+  id: string,
+  casamentoId: string,
+  pessoas: number
+): Promise<void> {
+  await pool.query(
+    `update convidados set
+       checkin_em = coalesce(checkin_em, now()),
+       checkin_pessoas = $3,
+       atualizado_em = now()
+     where id = $1 and casamento_id = $2`,
+    [id, casamentoId, pessoas]
+  );
+}
+
+export async function desfazerCheckin(
+  id: string,
+  casamentoId: string
+): Promise<void> {
+  await pool.query(
+    `update convidados set checkin_em = null, checkin_pessoas = null,
+       atualizado_em = now()
+     where id = $1 and casamento_id = $2`,
     [id, casamentoId]
   );
 }

@@ -7,7 +7,11 @@ import {
   criarTarefa as salvarTarefa,
   definirConclusao,
   arquivarTarefa as arquivar,
+  inserirTarefasSugeridas,
 } from "@/lib/db/queries/tarefas";
+import { buscarCasamentoPorId } from "@/lib/db/queries/casamentos";
+import { hojeIso } from "@/lib/datas";
+import { sugerirTarefas } from "@/lib/tarefas-modelo";
 
 export type EstadoFormularioTarefa = { erro?: string } | undefined;
 
@@ -53,4 +57,28 @@ export async function arquivarTarefa(id: string) {
   const usuario = await exigirSessao();
   await arquivar(id, usuario.casamentoId);
   revalidatePath("/painel/tarefas");
+}
+
+export type EstadoChecklistSugerido =
+  | { erro?: string; adicionadas?: number }
+  | undefined;
+
+export async function gerarChecklistSugerido(
+  _estado: EstadoChecklistSugerido
+): Promise<EstadoChecklistSugerido> {
+  const usuario = await exigirSessao();
+  const casamento = await buscarCasamentoPorId(usuario.casamentoId);
+
+  if (!casamento?.data_casamento) {
+    return { erro: "Defina a data do casamento em Meu site primeiro." };
+  }
+
+  const sugeridas = sugerirTarefas(casamento.data_casamento, hojeIso());
+  const adicionadas = await inserirTarefasSugeridas(
+    usuario.casamentoId,
+    sugeridas
+  );
+
+  revalidatePath("/painel/tarefas");
+  return { adicionadas };
 }
