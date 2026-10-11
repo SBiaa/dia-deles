@@ -1,13 +1,12 @@
 import Link from "next/link";
+import { Logo } from "@/components/ui/Logo";
 import { FormularioCadastro } from "@/components/auth/FormularioCadastro";
 
 export default function PaginaCadastro() {
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
       <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
-        <p className="font-serif text-sm tracking-widest text-accent uppercase">
-          dia deles
-        </p>
+        <Logo tamanho="sm" />
         <h1 className="mt-1 font-serif text-2xl text-foreground">
           Crie o site do seu casamento
         </h1>

@@ -1,5 +1,10 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
+import { LogOut } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
+import {
+  NavegacaoHorizontal,
+  NavegacaoLateral,
+} from "@/components/painel/NavegacaoPainel";
 import { auth } from "@/lib/auth";
 import { sair } from "@/app/actions/auth";
 
@@ -11,42 +16,56 @@ export default async function LayoutPainel({
     redirect("/login");
   }
 
+  const nome = session.user.name ?? "";
+  const inicial = nome.trim().charAt(0).toUpperCase() || "H";
+
+  const botaoSair = (
+    <form action={sair}>
+      <button
+        type="submit"
+        className="flex items-center gap-2 text-sm text-muted-foreground transition hover:text-foreground"
+      >
+        <LogOut size={16} aria-hidden />
+        Sair
+      </button>
+    </form>
+  );
+
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="flex items-center justify-between border-b border-border bg-card px-6 py-4">
-        <Link href="/painel" className="font-serif text-lg text-foreground">
-          dia deles
-        </Link>
-        <nav className="flex items-center gap-5 text-sm text-muted-foreground">
-          <Link href="/painel" className="hover:text-foreground">
-            Visão geral
-          </Link>
-          <Link href="/painel/site" className="hover:text-foreground">
-            Meu site
-          </Link>
-          <Link href="/painel/convidados" className="hover:text-foreground">
-            Convidados
-          </Link>
-          <Link href="/painel/presentes" className="hover:text-foreground">
-            Presentes
-          </Link>
-          <Link href="/painel/custos" className="hover:text-foreground">
-            Custos
-          </Link>
-          <Link href="/painel/tarefas" className="hover:text-foreground">
-            Checklist
-          </Link>
-          <Link href="/painel/configuracoes" className="hover:text-foreground">
-            Configurações
-          </Link>
-          <form action={sair}>
-            <button type="submit" className="hover:text-foreground">
-              Sair
-            </button>
-          </form>
-        </nav>
+    <div className="min-h-screen bg-background">
+      {/* Desktop: barra lateral fixa */}
+      <aside className="fixed inset-y-0 left-0 hidden w-64 flex-col border-r border-border bg-card px-4 py-6 lg:flex print:hidden">
+        <div className="px-3">
+          <Logo tamanho="md" href="/painel" />
+        </div>
+        <div className="mt-8 flex-1 overflow-y-auto">
+          <NavegacaoLateral />
+        </div>
+        <div className="mt-4 flex items-center gap-3 border-t border-border px-3 pt-4">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-sol-suave font-serif text-base text-accent">
+            {inicial}
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-medium text-foreground">
+              {nome}
+            </p>
+            {botaoSair}
+          </div>
+        </div>
+      </aside>
+
+      {/* Celular/tablet: topo com logo + pílulas */}
+      <header className="sticky top-0 z-10 border-b border-border bg-card/95 pt-4 backdrop-blur lg:hidden print:hidden">
+        <div className="flex items-center justify-between px-4 pb-3">
+          <Logo tamanho="sm" href="/painel" />
+          {botaoSair}
+        </div>
+        <NavegacaoHorizontal />
       </header>
-      <main className="flex-1 bg-background px-6 py-10">{children}</main>
+
+      <main className="px-4 py-8 sm:px-8 lg:pl-[calc(16rem+2.5rem)] lg:pr-10 lg:py-10 print:p-0 print:lg:p-0">
+        {children}
+      </main>
     </div>
   );
 }

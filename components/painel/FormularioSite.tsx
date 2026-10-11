@@ -1,6 +1,14 @@
 "use client";
 
 import { useActionState } from "react";
+import {
+  BookOpen,
+  Church,
+  CircleCheck,
+  Heart,
+  PartyPopper,
+  type LucideIcon,
+} from "lucide-react";
 import { atualizarSite } from "@/app/painel/site/actions";
 import { Campo } from "@/components/ui/Campo";
 import { Botao } from "@/components/ui/Botao";
@@ -12,13 +20,48 @@ function paraDatetimeLocal(valor: string | null): string {
   return valor.slice(0, 16);
 }
 
+function Secao({
+  icone: Icone,
+  titulo,
+  dica,
+  cor,
+  children,
+}: {
+  icone: LucideIcon;
+  titulo: string;
+  dica: string;
+  cor: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-2xl border border-border bg-card p-5 sm:p-7">
+      <div className="flex items-center gap-3">
+        <span
+          className={`flex size-10 shrink-0 items-center justify-center rounded-xl ${cor}`}
+        >
+          <Icone size={20} aria-hidden />
+        </span>
+        <div>
+          <h2 className="font-serif text-xl text-foreground">{titulo}</h2>
+          <p className="text-xs text-muted-foreground">{dica}</p>
+        </div>
+      </div>
+      <div className="mt-6 flex flex-col gap-4">{children}</div>
+    </section>
+  );
+}
+
 export function FormularioSite({ casamento }: { casamento: CasamentoRow }) {
   const [estado, action, pendente] = useActionState(atualizarSite, undefined);
 
   return (
-    <form action={action} className="flex flex-col gap-10">
-      <section className="flex flex-col gap-4">
-        <h2 className="font-serif text-lg text-foreground">Os noivos</h2>
+    <form action={action} className="flex flex-col gap-6">
+      <Secao
+        icone={Heart}
+        titulo="Os noivos"
+        dica="Nomes, data e a foto que abre o site."
+        cor="bg-rosa/10 text-rosa"
+      >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Campo
             label="Nome de um dos noivos"
@@ -32,44 +75,56 @@ export function FormularioSite({ casamento }: { casamento: CasamentoRow }) {
             required
             defaultValue={casamento.nome_parceiro_2}
           />
+          <Campo
+            label="Data do casamento"
+            name="dataCasamento"
+            type="date"
+            defaultValue={casamento.data_casamento?.slice(0, 10) ?? ""}
+          />
+          <Campo
+            label="Instagram (opcional)"
+            name="instagramUrl"
+            defaultValue={casamento.instagram_url ?? ""}
+          />
         </div>
-        <Campo
-          label="Data do casamento"
-          name="dataCasamento"
-          type="date"
-          defaultValue={casamento.data_casamento?.slice(0, 10) ?? ""}
-        />
-        <Campo
-          label="Instagram (opcional)"
-          name="instagramUrl"
-          defaultValue={casamento.instagram_url ?? ""}
-        />
         <CampoFotoCapa urlInicial={casamento.foto_capa_url} />
-      </section>
+      </Secao>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="font-serif text-lg text-foreground">Nossa história</h2>
+      <Secao
+        icone={BookOpen}
+        titulo="Nossa história"
+        dica="Conte como tudo começou. Um texto curto já encanta."
+        cor="bg-sol/15 text-[#8a6a1f]"
+      >
         <Campo
           label="Título"
           name="historiaTitulo"
+          placeholder="Ex.: Como tudo começou"
           defaultValue={casamento.historia_titulo ?? ""}
         />
         <div className="flex flex-col gap-1.5">
-          <label htmlFor="historiaTexto" className="text-sm text-muted-foreground">
+          <label
+            htmlFor="historiaTexto"
+            className="text-sm text-muted-foreground"
+          >
             Texto
           </label>
           <textarea
             id="historiaTexto"
             name="historiaTexto"
-            rows={6}
+            rows={7}
             defaultValue={casamento.historia_texto ?? ""}
-            className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
+            className="rounded-xl border border-border bg-card px-3.5 py-3 text-sm leading-relaxed text-foreground outline-none focus:border-accent"
           />
         </div>
-      </section>
+      </Secao>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="font-serif text-lg text-foreground">Cerimônia</h2>
+      <Secao
+        icone={Church}
+        titulo="Cerimônia"
+        dica="Onde e quando os convidados devem chegar."
+        cor="bg-accent/10 text-accent"
+      >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Campo
             label="Local"
@@ -93,10 +148,14 @@ export function FormularioSite({ casamento }: { casamento: CasamentoRow }) {
             defaultValue={casamento.cerimonia_mapa_url ?? ""}
           />
         </div>
-      </section>
+      </Secao>
 
-      <section className="flex flex-col gap-4">
-        <h2 className="font-serif text-lg text-foreground">Recepção</h2>
+      <Secao
+        icone={PartyPopper}
+        titulo="Recepção"
+        dica="A festa, se for em outro lugar ou horário."
+        cor="bg-verde/10 text-verde"
+      >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Campo
             label="Local"
@@ -120,16 +179,29 @@ export function FormularioSite({ casamento }: { casamento: CasamentoRow }) {
             defaultValue={casamento.recepcao_mapa_url ?? ""}
           />
         </div>
-      </section>
+      </Secao>
 
-      {estado?.erro && <p className="text-sm text-accent">{estado.erro}</p>}
-      {estado?.salvo && (
-        <p className="text-sm text-emerald-700">Alterações salvas.</p>
-      )}
-
-      <Botao type="submit" disabled={pendente} className="self-start">
-        {pendente ? "Salvando..." : "Salvar alterações"}
-      </Botao>
+      <div className="sticky bottom-4 z-10 flex items-center justify-between gap-4 rounded-2xl border border-border bg-card/95 px-5 py-3.5 shadow-lg backdrop-blur">
+        <p
+          aria-live="polite"
+          className={`flex items-center gap-2 text-sm ${
+            estado?.erro ? "text-rosa" : estado?.salvo ? "text-verde" : "text-muted-foreground"
+          }`}
+        >
+          {estado?.erro ? (
+            estado.erro
+          ) : estado?.salvo ? (
+            <>
+              <CircleCheck size={16} aria-hidden /> Alterações salvas.
+            </>
+          ) : (
+            "As mudanças só aparecem no site depois de salvar."
+          )}
+        </p>
+        <Botao type="submit" disabled={pendente} className="shrink-0">
+          {pendente ? "Salvando..." : "Salvar alterações"}
+        </Botao>
+      </div>
     </form>
   );
 }

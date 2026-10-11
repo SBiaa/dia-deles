@@ -32,7 +32,7 @@ export function Campo({
         defaultValue={defaultValue}
         autoFocus={autoFocus}
         placeholder={placeholder}
-        className="rounded-md border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
+        className="rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-foreground outline-none focus:border-accent"
       />
       {erro?.map((mensagem) => (
         <p key={mensagem} className="text-xs text-accent">
