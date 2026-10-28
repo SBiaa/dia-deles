@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { useActionState, useState } from "react";
 import { Heart } from "lucide-react";
 import {
   responderConvite,
@@ -25,9 +25,12 @@ export function RespostaPadrinho({
     aceitouInicial === false ? "nao" : "sim"
   );
 
-  useEffect(() => {
+  // Quando chega uma resposta salva, fecha o formulário.
+  const [estadoVisto, setEstadoVisto] = useState(estado);
+  if (estado !== estadoVisto) {
+    setEstadoVisto(estado);
     if (estado?.ok) setEditando(false);
-  }, [estado]);
+  }
 
   const respondeu = aceitouInicial !== null || estado?.ok;
   const aceitou = estado?.ok ? escolha === "sim" : aceitouInicial;

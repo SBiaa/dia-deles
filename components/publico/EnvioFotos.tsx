@@ -1,10 +1,21 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { upload } from "@vercel/blob/client";
 import { Camera, CircleCheck, Loader2 } from "lucide-react";
 
 const CHAVE_NOME = "hera:galeria:nome";
+
+// Nome salvo numa visita anterior (vazio no servidor ou sem armazenamento local).
+const naoMuda = () => () => {};
+function lerNomeSalvo() {
+  try {
+    return window.localStorage.getItem(CHAVE_NOME) ?? "";
+  } catch {
+    return "";
+  }
+}
+const semNomeSalvo = () => "";
 
 export function EnvioFotos({
   token,
@@ -13,7 +24,10 @@ export function EnvioFotos({
   token: string;
   moderada: boolean;
 }) {
-  const [nome, setNome] = useState("");
+  const nomeSalvo = useSyncExternalStore(naoMuda, lerNomeSalvo, semNomeSalvo);
+  // null = a pessoa ainda não digitou; usa o nome salvo.
+  const [nomeDigitado, setNome] = useState<string | null>(null);
+  const nome = nomeDigitado ?? nomeSalvo;
   const [enviando, setEnviando] = useState(false);
   const [progresso, setProgresso] = useState({ feitas: 0, total: 0 });
   const [resultado, setResultado] = useState<{
@@ -21,15 +35,6 @@ export function EnvioFotos({
     falhas: number;
   } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    try {
-      const salvo = window.localStorage.getItem(CHAVE_NOME);
-      if (salvo) setNome(salvo);
-    } catch {
-      // Sem armazenamento local: o nome só vale nesta visita.
-    }
-  }, []);
 
   async function enviar(arquivos: FileList | null) {
     if (!arquivos || arquivos.length === 0 || !nome.trim()) return;

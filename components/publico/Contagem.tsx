@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
-function calcular(alvo: number) {
-  const diff = Math.max(0, alvo - Date.now());
+// Relógio que avisa a cada segundo; no servidor não há hora (mostra "–").
+function assinarRelogio(avisar: () => void) {
+  const id = setInterval(avisar, 1000);
+  return () => clearInterval(id);
+}
+const segundoAtual = () => Math.floor(Date.now() / 1000);
+const semHora = () => null;
+
+function calcular(alvo: number, agora: number) {
+  const diff = Math.max(0, alvo - agora);
   return {
     dias: Math.floor(diff / (1000 * 60 * 60 * 24)),
     horas: Math.floor((diff / (1000 * 60 * 60)) % 24),
@@ -14,15 +22,8 @@ function calcular(alvo: number) {
 
 export function Contagem({ dataAlvo }: { dataAlvo: string }) {
   const alvo = new Date(dataAlvo).getTime();
-  const [valores, setValores] = useState<ReturnType<typeof calcular> | null>(
-    null
-  );
-
-  useEffect(() => {
-    setValores(calcular(alvo));
-    const id = setInterval(() => setValores(calcular(alvo)), 1000);
-    return () => clearInterval(id);
-  }, [alvo]);
+  const segundo = useSyncExternalStore(assinarRelogio, segundoAtual, semHora);
+  const valores = segundo === null ? null : calcular(alvo, segundo * 1000);
 
   const unidades = [
     { rotulo: "dias", valor: valores?.dias },
