@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
+import { urlDoBlobDoApp } from "@/lib/blob";
+import { dentroDoLimite, ipDe } from "@/lib/limite";
 import {
   buscarCasamentoPorGaleriaToken,
   criarFoto,
@@ -17,6 +19,9 @@ export async function POST(
   { params }: { params: Promise<{ token: string }> }
 ) {
   const { token } = await params;
+  if (!(await dentroDoLimite(`galeria-fotos:${ipDe(request.headers)}`, 60, 600))) {
+    return NextResponse.json({ erro: "Muitas tentativas." }, { status: 429 });
+  }
   const casamento = await buscarCasamentoPorGaleriaToken(token);
   if (!casamento) {
     return NextResponse.json({ erro: "Galeria indisponível." }, { status: 404 });
@@ -30,9 +35,8 @@ export async function POST(
     );
   }
 
-  // Só aceita arquivos que estejam no armazenamento do próprio app.
-  const host = new URL(corpo.data.url).hostname;
-  if (!host.endsWith(".blob.vercel-storage.com")) {
+  // Só aceita arquivos do Blob do próprio app, enviados por esta galeria.
+  if (!urlDoBlobDoApp(corpo.data.url, `/galeria/${token}/`)) {
     return NextResponse.json({ erro: "Arquivo inválido." }, { status: 400 });
   }
 

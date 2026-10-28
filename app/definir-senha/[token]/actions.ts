@@ -2,7 +2,9 @@
 
 import { AuthError } from "next-auth";
 import bcrypt from "bcryptjs";
+import { headers } from "next/headers";
 import { signIn } from "@/lib/auth";
+import { dentroDoLimite, ipDe } from "@/lib/limite";
 import { esquemaDefinirSenha } from "@/lib/validacao/cadastro";
 import {
   buscarUsuarioPorTokenDefinirSenha,
@@ -22,6 +24,10 @@ export async function definirSenha(
 
   if (!validado.success) {
     return { erro: "A senha precisa ter pelo menos 8 caracteres." };
+  }
+
+  if (!(await dentroDoLimite(`senha:${ipDe(await headers())}`, 10, 900))) {
+    return { erro: "Muitas tentativas. Tente novamente em alguns minutos." };
   }
 
   const usuario = await buscarUsuarioPorTokenDefinirSenha(token);

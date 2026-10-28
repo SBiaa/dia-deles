@@ -53,7 +53,8 @@ export function EnvioFotos({
     let falhas = 0;
     for (const arquivo of lista) {
       try {
-        const blob = await upload(`galeria/${arquivo.name}`, arquivo, {
+        const blob = await upload(
+          `galeria/${token}/${arquivo.name.replace(/[^\w.-]+/g, "_")}`, arquivo, {
           access: "public",
           handleUploadUrl: `/api/galeria/${token}/upload`,
         });

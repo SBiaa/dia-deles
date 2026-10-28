@@ -7,12 +7,16 @@ import {
   PresenteJaReservadoError,
 } from "@/lib/db/queries/presentes";
 import { buscarCasamentoPorId } from "@/lib/db/queries/casamentos";
+import { dentroDoLimite, ipDe } from "@/lib/limite";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+  if (!(await dentroDoLimite(`reserva:${ipDe(request.headers)}`, 10, 3600))) {
+    return NextResponse.json({ erro: "Muitas tentativas." }, { status: 429 });
+  }
   const formData = await request.formData();
 
   const validado = esquemaReserva.safeParse({

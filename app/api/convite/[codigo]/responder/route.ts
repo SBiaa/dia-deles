@@ -6,12 +6,16 @@ import {
   registrarResposta,
 } from "@/lib/db/queries/convidados";
 import { buscarCasamentoPorId } from "@/lib/db/queries/casamentos";
+import { dentroDoLimite, ipDe } from "@/lib/limite";
 
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ codigo: string }> }
 ) {
   const { codigo } = await params;
+  if (!(await dentroDoLimite(`rsvp:${ipDe(request.headers)}`, 20, 600))) {
+    return NextResponse.json({ erro: "Muitas tentativas." }, { status: 429 });
+  }
   const formData = await request.formData();
 
   const validado = esquemaResposta.safeParse({

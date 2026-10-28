@@ -1,3 +1,4 @@
+import { randomInt } from "node:crypto";
 import { existeCodigoConvite } from "./db/queries/convidados";
 
 const ALFABETO = "23456789abcdefghjkmnpqrstuvwxyz";
@@ -5,7 +6,7 @@ const ALFABETO = "23456789abcdefghjkmnpqrstuvwxyz";
 function sortearCodigo(tamanho = 8): string {
   let codigo = "";
   for (let i = 0; i < tamanho; i++) {
-    codigo += ALFABETO[Math.floor(Math.random() * ALFABETO.length)];
+    codigo += ALFABETO[randomInt(ALFABETO.length)];
   }
   return codigo;
 }

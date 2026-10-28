@@ -2,11 +2,15 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { ehAdmin } from "@/lib/admin";
 import { registrarVisita } from "@/lib/db/queries/visitas";
+import { dentroDoLimite, ipDe } from "@/lib/limite";
 
 const UUID = /^[0-9a-f-]{36}$/i;
 const CAMINHO = /^\/[a-z0-9/_-]{0,80}$/i;
 
 export async function POST(request: Request) {
+  if (!(await dentroDoLimite(`visita:${ipDe(request.headers)}`, 120, 60))) {
+    return new NextResponse(null, { status: 204 });
+  }
   try {
     const dados = (await request.json()) as {
       vid?: unknown;

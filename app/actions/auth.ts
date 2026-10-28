@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/lib/auth";
@@ -10,6 +10,8 @@ import { criarCasamento } from "@/lib/db/queries/casamentos";
 import { gerarSlugDisponivel } from "@/lib/slugs";
 import { registrarOrigemUsuario } from "@/lib/db/queries/visitas";
 import { gerarTokenDefinirSenha } from "@/lib/tokens";
+import { ehAdmin } from "@/lib/admin";
+import { dentroDoLimite, ipDe } from "@/lib/limite";
 
 export type EstadoFormularioAuth =
   | {
@@ -35,6 +37,17 @@ export async function cadastrar(
   }
 
   const dados = validado.data;
+
+  if (!(await dentroDoLimite(`cadastro:${ipDe(await headers())}`, 5, 3600))) {
+    return { erro: "Muitas tentativas. Tente novamente mais tarde." };
+  }
+
+  // Sem verificação de e-mail, quem se cadastra com um e-mail de admin ainda
+  // não registrado viraria admin. Contas admin devem existir antes de
+  // ADMIN_EMAILS ser configurado em produção.
+  if (ehAdmin(dados.email)) {
+    return { erro: "Não foi possível criar a conta com esse e-mail." };
+  }
 
   const existente = await buscarUsuarioPorEmail(dados.email);
   if (existente) {
