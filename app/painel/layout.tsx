@@ -1,5 +1,7 @@
 import { redirect } from "next/navigation";
-import { LogOut } from "lucide-react";
+import Link from "next/link";
+import { LogOut, ShieldCheck } from "lucide-react";
+import { ehAdmin } from "@/lib/admin";
 import { Logo } from "@/components/ui/Logo";
 import {
   NavegacaoHorizontal,
@@ -18,6 +20,18 @@ export default async function LayoutPainel({
 
   const nome = session.user.name ?? "";
   const inicial = nome.trim().charAt(0).toUpperCase() || "H";
+
+  const admin = ehAdmin(session.user.email);
+
+  const linkAdmin = admin ? (
+    <Link
+      href="/admin"
+      className="flex items-center gap-1.5 text-sm font-medium text-accent hover:underline"
+    >
+      <ShieldCheck size={16} aria-hidden />
+      Admin
+    </Link>
+  ) : null;
 
   const botaoSair = (
     <form action={sair}>
@@ -49,7 +63,10 @@ export default async function LayoutPainel({
             <p className="truncate text-sm font-medium text-foreground">
               {nome}
             </p>
-            {botaoSair}
+            <div className="flex items-center gap-4">
+              {botaoSair}
+              {linkAdmin}
+            </div>
           </div>
         </div>
       </aside>
@@ -58,7 +75,10 @@ export default async function LayoutPainel({
       <header className="sticky top-0 z-10 border-b border-border bg-card/95 pt-4 backdrop-blur lg:hidden print:hidden">
         <div className="flex items-center justify-between px-4 pb-3">
           <Logo tamanho="sm" href="/painel" />
-          {botaoSair}
+          <div className="flex items-center gap-4">
+            {linkAdmin}
+            {botaoSair}
+          </div>
         </div>
         <NavegacaoHorizontal />
       </header>

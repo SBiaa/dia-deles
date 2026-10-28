@@ -19,6 +19,12 @@ export default function PaginaLogin() {
             Criar agora
           </Link>
         </p>
+        <p className="mt-2 text-center text-sm text-muted-foreground">
+          Esqueceu a senha ou não consegue entrar?{" "}
+          <Link href="/contato" className="text-accent underline">
+            Fale com a gente
+          </Link>
+        </p>
       </div>
     </main>
   );

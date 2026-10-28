@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AuthError } from "next-auth";
 import { signIn, signOut } from "@/lib/auth";
@@ -7,6 +8,7 @@ import { esquemaCadastro, esquemaLogin } from "@/lib/validacao/cadastro";
 import { buscarUsuarioPorEmail, criarUsuario } from "@/lib/db/queries/usuarios";
 import { criarCasamento } from "@/lib/db/queries/casamentos";
 import { gerarSlugDisponivel } from "@/lib/slugs";
+import { registrarOrigemUsuario } from "@/lib/db/queries/visitas";
 import { gerarTokenDefinirSenha } from "@/lib/tokens";
 
 export type EstadoFormularioAuth =
@@ -45,6 +47,12 @@ export async function cadastrar(
     nome: dados.nome,
     tokenDefinirSenha: token,
   });
+  const jar = await cookies();
+  await registrarOrigemUsuario(
+    usuario.id,
+    jar.get("hera_vid")?.value ?? null,
+    jar.get("hera_origem")?.value ?? null
+  );
   const slug = await gerarSlugDisponivel(dados.nomeParceiro1, dados.nomeParceiro2);
   await criarCasamento({
     usuarioId: usuario.id,

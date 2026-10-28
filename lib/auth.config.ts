@@ -9,7 +9,9 @@ export default {
   callbacks: {
     authorized({ auth, request }) {
       const logado = !!auth?.user;
-      const precisaLogin = request.nextUrl.pathname.startsWith("/painel");
+      const caminho = request.nextUrl.pathname;
+      const precisaLogin =
+        caminho.startsWith("/painel") || caminho.startsWith("/admin");
       if (!precisaLogin) return true;
       return logado;
     },

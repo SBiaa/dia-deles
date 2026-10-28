@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Inter } from "next/font/google";
 import "./globals.css";
+import { RastreadorVisita } from "@/components/analytics/RastreadorVisita";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -35,7 +36,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="pt-BR"
       className={`${fraunces.variable} ${inter.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">{children}
+        <RastreadorVisita />
+      </body>
     </html>
   );
 }

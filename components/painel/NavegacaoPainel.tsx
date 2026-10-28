@@ -11,6 +11,7 @@ import {
   House,
   Images,
   LayoutGrid,
+  LifeBuoy,
   ListChecks,
   QrCode,
   Settings,
@@ -60,6 +61,7 @@ const grupos: Grupo[] = [
     titulo: null,
     itens: [
       { href: "/painel/configuracoes", rotulo: "Configurações", icone: Settings },
+      { href: "/painel/suporte", rotulo: "Ajuda e suporte", icone: LifeBuoy },
     ],
   },
 ];
